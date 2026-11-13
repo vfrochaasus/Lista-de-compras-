@@ -34,7 +34,8 @@ h1{font-size:28px;margin:6px 0 4px;letter-spacing:-.02em}
 .item{display:flex;gap:8px}
 input{font:inherit;color:var(--tx);background:transparent;border:0;border-bottom:1px dashed var(--ln);padding:6px 2px;min-width:0;width:100%;border-radius:0}
 input:focus{outline:none;border-bottom-color:var(--tx)}
-input.v{width:110px;text-align:right;flex:none}
+input.v{width:88px;text-align:right;flex:none}
+.item .sbtn{min-width:30px;width:30px;height:32px;padding:0;margin-left:0!important;flex:none;align-self:center}
 .sum{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .sum b{font-size:20px}
 .pos{color:var(--pos)}.neg{color:var(--neg)}
@@ -122,6 +123,15 @@ function editList(l,isNew){
   if(isNew)m.querySelector('#nm').select();
 }
 
+function pickColor(i,done){
+  var m=document.getElementById('modal');
+  m.innerHTML='<div class="modal"><div class="sheet"><h2>Cor do produto</h2><div class="sw"></div><div class="acts"><button class="no">Sem cor</button><button class="ok">Fechar</button></div></div></div>';
+  var sw=m.querySelector('.sw');
+  COLORS.forEach(function(k){var b=document.createElement('button');b.style.background=k;if(k===i.color)b.className='on';b.onclick=function(){i.color=k;m.innerHTML='';done()};sw.appendChild(b)});
+  m.querySelector('.no').onclick=function(){delete i.color;m.innerHTML='';done()};
+  m.querySelector('.ok').onclick=function(){m.innerHTML=''};
+  m.querySelector('.modal').addEventListener('click',function(e){if(e.target.classList.contains('modal'))m.innerHTML=''});
+}
 /* cálculo das somas */
 function calc(l){
   var acc=0,out={};
@@ -161,7 +171,9 @@ function open(lid){
       }
       r.querySelector('.rm').onclick=function(){l.items=l.items.filter(function(x){return x!==i});save();open(lid)};
     }
-    if(i.t==='item'){var rmb=$('<button class="sbtn" aria-label="Remover" style="margin-left:6px">×</button>');rmb.onclick=function(){l.items=l.items.filter(function(x){return x!==i});save();open(lid)};r.querySelector('.card').appendChild(rmb)}
+    if(i.t==='item'){var cd=r.querySelector('.card');if(i.color){cd.style.borderLeft='6px solid '+i.color;cd.style.background='color-mix(in srgb,'+i.color+' 16%,var(--sf))'}
+      var dot=$('<button class="sbtn" aria-label="Cor do produto"></button>');dot.style.background=i.color||'var(--bg)';dot.style.border='2px solid '+(i.color||'var(--ln)');dot.onclick=function(){pickColor(i,function(){save();open(lid)})};cd.appendChild(dot);
+      var rmb=$('<button class="sbtn" aria-label="Remover">×</button>');rmb.onclick=function(){l.items=l.items.filter(function(x){return x!==i});save();open(lid)};cd.appendChild(rmb)}
     r.querySelector('.grip').addEventListener('pointerdown',function(e){dragStart(e,l.items,function(){open(lid)})});
     box.appendChild(r);
   });
