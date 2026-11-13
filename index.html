@@ -39,11 +39,13 @@ input.v{width:88px;text-align:right;flex:none}
 .toast{position:fixed;left:16px;right:16px;bottom:calc(84px + env(safe-area-inset-bottom,0px));max-width:528px;margin:0 auto;background:var(--ac);color:var(--ac-t);border-radius:14px;padding:10px 12px 10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;z-index:8;box-shadow:0 6px 20px rgba(0,0,0,.25)}
 .toast button{border:0;background:transparent;color:inherit;font:700 15px inherit;font-family:inherit;text-decoration:underline;padding:8px 10px}
 .sum{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.sum b{font-size:20px}
+.sum b{font-size:30px;line-height:1.1;display:block}
+.sum .sbtn{height:30px;min-width:34px;font-size:16px;padding:0 8px}
+.card.s{padding:6px 12px}
 .pos{color:var(--pos)}.neg{color:var(--neg)}
 .tag{font-size:13px;color:var(--mu)}
 .sbtn{border:1px solid var(--ln);background:var(--bg);color:var(--tx);border-radius:10px;min-width:40px;height:36px;font:700 18px inherit;font-family:inherit;padding:0 10px}
-.card.s{border:2px solid var(--tx)}
+.card.s{border:2px solid var(--pos)}
 .chips{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:6px;margin-top:10px;padding-bottom:6px;-webkit-overflow-scrolling:touch}
 .chip{flex:none;white-space:nowrap;border:1px solid var(--ln);background:var(--bg);color:var(--tx);border-radius:99px;padding:6px 12px;font:500 14px inherit;font-family:inherit}
 .chip.p{background:var(--pos);color:#fff;border-color:var(--pos)}
@@ -169,7 +171,7 @@ function open(lid){
       r.querySelector('.v').onchange=function(e){i.value=num(e.target.value);save();open(lid)};
     }else{
       var v=sums[i.id]||0,auto=i.t==='sum';
-      r=$('<div class="row" data-id="'+i.id+'"><div class="card s"><div class="sum"><div><div class="tag">'+(auto?'Soma do bloco acima':'Soma manual')+'</div><b class="'+(v<0?'neg':'pos')+'">'+brl(v)+'</b></div><div>'+(auto?'<button class="sbtn sg">'+(i.sign===-1?'−':'+')+'</button> ':'')+'<button class="sbtn rm" aria-label="Remover">×</button></div></div></div><div class="grip">⠿</div></div>');
+      r=$('<div class="row" data-id="'+i.id+'"><div class="card s"><div class="sum"><div><b class="'+(v<0?'neg':'pos')+'">'+brl(v)+'</b><div class="tag">'+(auto?'Soma do bloco acima':'Soma manual')+'</div></div><div>'+(auto?'<button class="sbtn sg">'+(i.sign===-1?'−':'+')+'</button> ':'')+'<button class="sbtn rm" aria-label="Remover">×</button></div></div></div><div class="grip">⠿</div></div>');
       if(auto)r.querySelector('.sg').onclick=function(){i.sign=i.sign===-1?1:-1;save();open(lid)};
       if(!auto){
         var ch=$('<div class="chips"></div>');
