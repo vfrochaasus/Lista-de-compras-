@@ -36,6 +36,8 @@ input{font:inherit;color:var(--tx);background:transparent;border:0;border-bottom
 input:focus{outline:none;border-bottom-color:var(--tx)}
 input.v{width:88px;text-align:right;flex:none}
 .item .sbtn{min-width:30px;width:30px;height:32px;padding:0;margin-left:0!important;flex:none;align-self:center}
+.toast{position:fixed;left:16px;right:16px;bottom:calc(84px + env(safe-area-inset-bottom,0px));max-width:528px;margin:0 auto;background:var(--ac);color:var(--ac-t);border-radius:14px;padding:10px 12px 10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;z-index:8;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.toast button{border:0;background:transparent;color:inherit;font:700 15px inherit;font-family:inherit;text-decoration:underline;padding:8px 10px}
 .sum{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .sum b{font-size:20px}
 .pos{color:var(--pos)}.neg{color:var(--neg)}
@@ -123,6 +125,16 @@ function editList(l,isNew){
   if(isNew)m.querySelector('#nm').select();
 }
 
+var toastT=null;
+function delItem(l,i,lid){
+  var idx=l.items.indexOf(i);if(idx<0)return;
+  l.items.splice(idx,1);save();open(lid);
+  var t=document.getElementById('toast');if(!t){t=document.createElement('div');t.id='toast';document.body.appendChild(t)}
+  clearTimeout(toastT);
+  t.innerHTML='<div class="toast"><span>Item removido</span><button>Desfazer</button></div>';
+  t.querySelector('button').onclick=function(){clearTimeout(toastT);t.innerHTML='';l.items.splice(Math.min(idx,l.items.length),0,i);save();if(view===lid)open(lid)};
+  toastT=setTimeout(function(){t.innerHTML=''},7000);
+}
 function pickColor(i,done){
   var m=document.getElementById('modal');
   m.innerHTML='<div class="modal"><div class="sheet"><h2>Cor do produto</h2><div class="sw"></div><div class="acts"><button class="no">Sem cor</button><button class="ok">Fechar</button></div></div></div>';
@@ -169,11 +181,11 @@ function open(lid){
         else{var t=$('<div class="tag" style="margin-top:8px">Toque no produto: soma (+), subtrai (−) ou ignora.</div>');r.querySelector('.card').appendChild(t)}
         r.querySelector('.card').appendChild(ch);
       }
-      r.querySelector('.rm').onclick=function(){l.items=l.items.filter(function(x){return x!==i});save();open(lid)};
+      r.querySelector('.rm').onclick=function(){delItem(l,i,lid)};
     }
     if(i.t==='item'){var cd=r.querySelector('.card');if(i.color){cd.style.borderLeft='6px solid '+i.color;cd.style.background='color-mix(in srgb,'+i.color+' 16%,var(--sf))'}
       var dot=$('<button class="sbtn" aria-label="Cor do produto"></button>');dot.style.background=i.color||'var(--bg)';dot.style.border='2px solid '+(i.color||'var(--ln)');dot.onclick=function(){pickColor(i,function(){save();open(lid)})};cd.appendChild(dot);
-      var rmb=$('<button class="sbtn" aria-label="Remover">×</button>');rmb.onclick=function(){l.items=l.items.filter(function(x){return x!==i});save();open(lid)};cd.appendChild(rmb)}
+      var rmb=$('<button class="sbtn" aria-label="Remover">×</button>');rmb.onclick=function(){delItem(l,i,lid)};cd.appendChild(rmb)}
     r.querySelector('.grip').addEventListener('pointerdown',function(e){dragStart(e,l.items,function(){open(lid)})});
     box.appendChild(r);
   });
