@@ -173,6 +173,10 @@ function open(lid){
       if(auto)r.querySelector('.sg').onclick=function(){i.sign=i.sign===-1?1:-1;save();open(lid)};
       if(!auto){
         var ch=$('<div class="chips"></div>');
+        (function(){var ps=l.items.filter(function(x){return x.t==='item'});if(!ps.length)return;i.sel=i.sel||{};
+          var all=ps.every(function(x){return i.sel[x.id]===1}),neg=ps.every(function(x){return i.sel[x.id]===-1});
+          var tb=document.createElement('button');tb.className='chip'+(all?' p':neg?' m':'');tb.style.fontWeight='700';tb.textContent=(all?'+ ':neg?'− ':'')+'Todos';
+          tb.onclick=function(){var v=all?-1:neg?0:1;ps.forEach(function(x){if(v)i.sel[x.id]=v;else delete i.sel[x.id]});save();open(lid)};ch.appendChild(tb)})();
         l.items.filter(function(x){return x.t==='item'}).forEach(function(x){
           i.sel=i.sel||{};var k=i.sel[x.id]||0;
           var b=document.createElement('button');b.className='chip'+(k===1?' p':k===-1?' m':'');b.textContent=(k===1?'+ ':k===-1?'− ':'')+(x.name||'Sem nome');
