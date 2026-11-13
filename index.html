@@ -4,6 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Minhas listas</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#1d1d1b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Listas">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#f6f4ef;--sf:#fff;--tx:#1d1d1b;--mu:#7a776e;--ln:#e2ded3;--ac:#1d1d1b;--ac-t:#fff;--pos:#1f7a52;--neg:#c23b22;
@@ -163,6 +170,7 @@ function open(lid){
   document.getElementById('am').onclick=function(){l.items.push({id:id(),t:'msum',sel:{}});save();open(lid)};
 }
 window.addEventListener('focusin',function(e){if(e.target.tagName==='INPUT')setTimeout(function(){e.target.scrollIntoView({block:'center',behavior:'smooth'})},300)});
+if('serviceWorker' in navigator&&location.protocol.indexOf('http')===0){try{navigator.serviceWorker.register('sw.js')}catch(e){}}
 home();
 </script>
 </body>
