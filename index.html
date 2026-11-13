@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Minhas listas</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f4ef;--sf:#fff;--tx:#1d1d1b;--mu:#7a776e;--ln:#e2ded3;--ac:#1d1d1b;--ac-t:#fff;--pos:#1f7a52;--neg:#c23b22;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#161614;--sf:#222220;--tx:#f1efe8;--mu:#9a978c;--ln:#37352f;--ac:#f1efe8;--ac-t:#161614;--pos:#5fd09a;--neg:#ff8b72}}
+:root[data-theme="dark"]{--bg:#161614;--sf:#222220;--tx:#f1efe8;--mu:#9a978c;--ln:#37352f;--ac:#f1efe8;--ac-t:#161614;--pos:#5fd09a;--neg:#ff8b72}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--bg);color:var(--tx);font:500 16px/1.3 "Bricolage Grotesque",system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
+main{max-width:560px;margin:0 auto;padding:18px 16px 90px}
+h1{font-size:28px;margin:6px 0 4px;letter-spacing:-.02em}
+.hint{color:var(--mu);font-size:14px;margin:0 0 16px}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.back{border:0;background:var(--sf);color:var(--tx);width:40px;height:40px;border-radius:12px;font-size:20px;border:1px solid var(--ln)}
+.row{display:flex;align-items:center;gap:10px;margin-bottom:10px;position:relative;user-select:none;-webkit-user-select:none}
+.row.drag{opacity:.55;transform:scale(1.02)}
+.blk{flex:1;min-height:68px;border-radius:16px;padding:14px 16px;color:#fff;font-size:20px;font-weight:700;display:flex;align-items:center;justify-content:space-between;cursor:pointer;border:0;text-align:left;font-family:inherit}
+.blk small{font-weight:500;opacity:.85;font-size:14px}
+.grip{touch-action:none;width:34px;height:44px;display:flex;align-items:center;justify-content:center;color:var(--mu);font-size:22px;cursor:grab;flex:none}
+.card{flex:1;background:var(--sf);border:1px solid var(--ln);border-radius:14px;padding:10px 12px;min-width:0}
+.item{display:flex;gap:8px}
+input{font:inherit;color:var(--tx);background:transparent;border:0;border-bottom:1px dashed var(--ln);padding:6px 2px;min-width:0;width:100%;border-radius:0}
+input:focus{outline:none;border-bottom-color:var(--tx)}
+input.v{width:110px;text-align:right;flex:none}
+.sum{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.sum b{font-size:20px}
+.pos{color:var(--pos)}.neg{color:var(--neg)}
+.tag{font-size:13px;color:var(--mu)}
+.sbtn{border:1px solid var(--ln);background:var(--bg);color:var(--tx);border-radius:10px;min-width:40px;height:36px;font:700 18px inherit;font-family:inherit;padding:0 10px}
+.card.s{border:2px solid var(--tx)}
+.chips{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:6px;margin-top:10px;padding-bottom:6px;-webkit-overflow-scrolling:touch}
+.chip{flex:none;white-space:nowrap;border:1px solid var(--ln);background:var(--bg);color:var(--tx);border-radius:99px;padding:6px 12px;font:500 14px inherit;font-family:inherit}
+.chip.p{background:var(--pos);color:#fff;border-color:var(--pos)}
+.chip.m{background:var(--neg);color:#fff;border-color:var(--neg)}
+.bar{position:fixed;left:0;right:0;bottom:0;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,var(--bg) 30%);display:flex;gap:8px;justify-content:center}
+.bar button{flex:1;max-width:260px;height:48px;border-radius:14px;border:1px solid var(--tx);background:var(--bg);color:var(--tx);font:700 15px inherit;font-family:inherit}
+.bar button.main{background:var(--ac);color:var(--ac-t)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-start;justify-content:center;z-index:5}
+.sheet{background:var(--sf);width:100%;max-width:560px;border-radius:0 0 22px 22px;padding:calc(20px + env(safe-area-inset-top,0px)) 18px 20px}
+.sheet h2{margin:0 0 12px;font-size:20px}
+.sw{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0}
+.sw button{width:38px;height:38px;border-radius:50%;border:3px solid transparent}
+.sw button.on{border-color:var(--tx)}
+.acts{display:flex;gap:8px;margin-top:6px}
+.acts button{flex:1;height:46px;border-radius:12px;border:1px solid var(--ln);background:var(--bg);color:var(--tx);font:700 15px inherit;font-family:inherit}
+.acts .ok{background:var(--ac);color:var(--ac-t);border-color:var(--ac)}
+.acts .del{color:var(--neg)}
+.empty{color:var(--mu);text-align:center;padding:40px 10px}
+.total{margin:4px 0 14px;color:var(--mu);font-size:14px}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<div id="modal"></div>
+<script>
+var COLORS=['#E4572E','#C77700','#1F8F6B','#2E7BD6','#8E5BD0','#D94F8A','#2B2D42','#6E7F2B'];
+var S={lists:[]},view=null,uid=0;
+try{var raw=localStorage.getItem('listas-blocos');if(raw)S=JSON.parse(raw)}catch(e){}
+if(!S.lists||!S.lists.length&&!raw){S={lists:[{id:'a1',name:'Roupas',color:COLORS[0],items:[{id:'i1',t:'item',name:'Calça',value:100},{id:'i2',t:'item',name:'Tênis',value:100},{id:'i3',t:'sum',sign:1}]}]}}
+function save(){try{localStorage.setItem('listas-blocos',JSON.stringify(S))}catch(e){}}
+function id(){return 'x'+Date.now().toString(36)+(uid++)}
+function $(h){var d=document.createElement('div');d.innerHTML=h.trim();return d.firstChild}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function brl(n){return n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}
+function num(s){s=String(s).replace(/[^\d,.-]/g,'');if(s.indexOf(',')>-1)s=s.replace(/\./g,'').replace(',','.');var n=parseFloat(s);return isNaN(n)?0:n}
+function listOf(i){return S.lists.find(function(l){return l.id===i})}
+
+/* arrastar para reordenar */
+function dragStart(e,arr,renderFn){
+  e.preventDefault();var did=e.currentTarget.closest('.row').dataset.id;
+  function move(ev){
+    var rows=[].slice.call(document.querySelectorAll('.row'));var y=ev.clientY,tgt=null;
+    rows.forEach(function(r){var b=r.getBoundingClientRect();if(y>=b.top&&y<=b.bottom)tgt=r.dataset.id});
+    if(tgt&&tgt!==did){var a=arr.findIndex(function(x){return x.id===did}),b=arr.findIndex(function(x){return x.id===tgt});
+      var it=arr.splice(a,1)[0];arr.splice(b,0,it);renderFn();mark()}
+  }
+  function mark(){var r=document.querySelector('.row[data-id="'+did+'"]');if(r)r.classList.add('drag')}
+  function up(){window.removeEventListener('pointermove',move);window.removeEventListener('pointerup',up);window.removeEventListener('pointercancel',up);save();renderFn()}
+  window.addEventListener('pointermove',move);window.addEventListener('pointerup',up);window.addEventListener('pointercancel',up);mark();
+}
+
+/* tela inicial */
+function home(){
+  view=null;var app=document.getElementById('app');
+  app.innerHTML='<h1>Minhas listas</h1><p class="hint">Toque para abrir. Segure para editar. Arraste pelo ⠿ para mudar a ordem.</p><div id="ls"></div><div class="bar"><button class="main" id="add">+ Nova lista</button></div>';
+  var box=document.getElementById('ls');
+  if(!S.lists.length)box.innerHTML='<div class="empty">Nenhuma lista ainda. Crie a primeira.</div>';
+  S.lists.forEach(function(l){
+    var n=l.items.filter(function(i){return i.t==='item'}).length;
+    var r=$('<div class="row" data-id="'+l.id+'"><button class="blk" style="background:'+l.color+'"><span>'+esc(l.name)+'</span><small>'+n+' itens</small></button><div class="grip">⠿</div></div>');
+    var b=r.querySelector('.blk'),tm=null,long=false;
+    b.addEventListener('pointerdown',function(){long=false;tm=setTimeout(function(){long=true;editList(l)},520)});
+    ['pointerup','pointerleave','pointercancel'].forEach(function(ev){b.addEventListener(ev,function(){clearTimeout(tm)})});
+    b.addEventListener('click',function(){if(!long)open(l.id)});
+    b.addEventListener('contextmenu',function(e){e.preventDefault()});
+    r.querySelector('.grip').addEventListener('pointerdown',function(e){dragStart(e,S.lists,home)});
+    box.appendChild(r);
+  });
+  document.getElementById('add').onclick=function(){var l={id:id(),name:'Nova lista',color:COLORS[S.lists.length%COLORS.length],items:[]};S.lists.push(l);save();editList(l,true)};
+}
+function editList(l,isNew){
+  var c=l.color,m=document.getElementById('modal');
+  m.innerHTML='<div class="modal"><div class="sheet"><h2>Editar lista</h2><input id="nm" value="'+esc(l.name)+'" style="font-size:18px"><div class="sw"></div><div class="acts"><button class="del">Excluir</button><button class="ok">Salvar</button></div></div></div>';
+  var sw=m.querySelector('.sw');
+  COLORS.forEach(function(k){var b=document.createElement('button');b.style.background=k;if(k===c)b.className='on';b.onclick=function(){c=k;[].forEach.call(sw.children,function(x){x.className=''});b.className='on'};sw.appendChild(b)});
+  m.querySelector('.ok').onclick=function(){l.name=m.querySelector('#nm').value.trim()||'Sem nome';l.color=c;save();m.innerHTML='';home()};
+  m.querySelector('.del').onclick=function(){if(confirm('Excluir esta lista?')){S.lists=S.lists.filter(function(x){return x!==l});save();m.innerHTML='';home()}};
+  m.querySelector('.modal').addEventListener('click',function(e){if(e.target.classList.contains('modal')){m.innerHTML='';if(isNew){save()}home()}});
+  if(isNew)m.querySelector('#nm').select();
+}
+
+/* cálculo das somas */
+function calc(l){
+  var acc=0,out={};
+  l.items.forEach(function(i){
+    if(i.t==='item')acc+=i.value||0;
+    else if(i.t==='sum'){out[i.id]=(i.sign||1)*acc;acc=0}
+    else if(i.t==='msum'){var s=0;l.items.forEach(function(x){var k=(i.sel||{})[x.id];if(k&&x.t==='item')s+=k*(x.value||0)});out[i.id]=s}
+  });
+  return out;
+}
+function open(lid){
+  view=lid;var l=listOf(lid);if(!l)return home();
+  var app=document.getElementById('app'),sums=calc(l);
+  var total=l.items.reduce(function(a,i){return a+(i.t==='item'?(i.value||0):0)},0);
+  app.innerHTML='<div class="top"><button class="back" id="bk" aria-label="Voltar">←</button><h1 style="margin:0">'+esc(l.name)+'</h1></div><p class="total">Total dos produtos: '+brl(total)+'</p><div id="its"></div>'+(l.items.length?'':'<div class="empty">Lista vazia. Adicione um produto.</div>')+'<div class="bar"><button id="ap" class="main">+ Produto</button><button id="as">+ Soma</button><button id="am">+ Soma manual</button></div>';
+  document.getElementById('bk').onclick=home;
+  var box=document.getElementById('its');
+  l.items.forEach(function(i){
+    var r;
+    if(i.t==='item'){
+      r=$('<div class="row" data-id="'+i.id+'"><div class="card item"><input class="n" placeholder="Produto" value="'+esc(i.name)+'"><input class="v" inputmode="decimal" placeholder="R$ 0,00" value="'+(i.value?brl(i.value):'')+'"></div><div class="grip">⠿</div></div>');
+      r.querySelector('.n').onchange=function(e){i.name=e.target.value;save()};
+      r.querySelector('.v').onchange=function(e){i.value=num(e.target.value);save();open(lid)};
+    }else{
+      var v=sums[i.id]||0,auto=i.t==='sum';
+      r=$('<div class="row" data-id="'+i.id+'"><div class="card s"><div class="sum"><div><div class="tag">'+(auto?'Soma do bloco acima':'Soma manual')+'</div><b class="'+(v<0?'neg':'pos')+'">'+brl(v)+'</b></div><div>'+(auto?'<button class="sbtn sg">'+(i.sign===-1?'−':'+')+'</button> ':'')+'<button class="sbtn rm" aria-label="Remover">×</button></div></div></div><div class="grip">⠿</div></div>');
+      if(auto)r.querySelector('.sg').onclick=function(){i.sign=i.sign===-1?1:-1;save();open(lid)};
+      if(!auto){
+        var ch=$('<div class="chips"></div>');
+        l.items.filter(function(x){return x.t==='item'}).forEach(function(x){
+          i.sel=i.sel||{};var k=i.sel[x.id]||0;
+          var b=document.createElement('button');b.className='chip'+(k===1?' p':k===-1?' m':'');b.textContent=(k===1?'+ ':k===-1?'− ':'')+(x.name||'Sem nome');
+          b.onclick=function(){i.sel[x.id]=k===0?1:k===1?-1:0;save();open(lid)};ch.appendChild(b)});
+        if(!ch.children.length)ch.innerHTML='<span class="tag">Adicione produtos para escolher.</span>';
+        else{var t=$('<div class="tag" style="margin-top:8px">Toque no produto: soma (+), subtrai (−) ou ignora.</div>');r.querySelector('.card').appendChild(t)}
+        r.querySelector('.card').appendChild(ch);
+      }
+      r.querySelector('.rm').onclick=function(){l.items=l.items.filter(function(x){return x!==i});save();open(lid)};
+    }
+    if(i.t==='item'){var rmb=$('<button class="sbtn" aria-label="Remover" style="margin-left:6px">×</button>');rmb.onclick=function(){l.items=l.items.filter(function(x){return x!==i});save();open(lid)};r.querySelector('.card').appendChild(rmb)}
+    r.querySelector('.grip').addEventListener('pointerdown',function(e){dragStart(e,l.items,function(){open(lid)})});
+    box.appendChild(r);
+  });
+  document.getElementById('ap').onclick=function(){l.items.push({id:id(),t:'item',name:'',value:0});save();open(lid);var ns=document.querySelectorAll('.n');if(ns.length)ns[ns.length-1].focus()};
+  document.getElementById('as').onclick=function(){l.items.push({id:id(),t:'sum',sign:1});save();open(lid)};
+  document.getElementById('am').onclick=function(){l.items.push({id:id(),t:'msum',sel:{}});save();open(lid)};
+}
+window.addEventListener('focusin',function(e){if(e.target.tagName==='INPUT')setTimeout(function(){e.target.scrollIntoView({block:'center',behavior:'smooth'})},300)});
+home();
+</script>
+</body>
+</html>
