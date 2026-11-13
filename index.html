@@ -184,7 +184,7 @@ function open(lid){
       r.querySelector('.rm').onclick=function(){delItem(l,i,lid)};
     }
     if(i.t==='item'){var cd=r.querySelector('.card');if(i.color){cd.style.borderLeft='6px solid '+i.color;cd.style.background='color-mix(in srgb,'+i.color+' 16%,var(--sf))'}
-      var dot=$('<button class="sbtn" aria-label="Cor do produto"></button>');dot.style.background=i.color||'var(--bg)';dot.style.border='2px solid '+(i.color||'var(--ln)');dot.onclick=function(){pickColor(i,function(){save();open(lid)})};cd.appendChild(dot);
+      var dot=$('<button class="sbtn" aria-label="Cor do produto"></button>');dot.style.background=i.color||'var(--bg)';dot.style.border='2px solid '+(i.color||'var(--ln)');dot.onclick=function(){pickColor(i,function(){save();open(lid)})};cd.insertBefore(dot,cd.firstChild);
       var rmb=$('<button class="sbtn" aria-label="Remover">×</button>');rmb.onclick=function(){delItem(l,i,lid)};cd.appendChild(rmb)}
     r.querySelector('.grip').addEventListener('pointerdown',function(e){dragStart(e,l.items,function(){open(lid)})});
     box.appendChild(r);
