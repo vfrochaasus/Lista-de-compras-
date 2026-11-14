@@ -44,6 +44,7 @@ input.v{width:88px;text-align:right;flex:none}
 .card.s{padding:6px 12px}
 .pos{color:var(--pos)}.neg{color:var(--neg)}
 .tag{font-size:13px;color:var(--mu)}
+input.note{border-bottom:0;padding:2px 0;font-size:13px;color:var(--mu);width:100%;background:transparent}
 .sbtn{border:1px solid var(--ln);background:var(--bg);color:var(--tx);border-radius:10px;min-width:40px;height:36px;font:700 18px inherit;font-family:inherit;padding:0 10px}
 .card.s{border:2px solid var(--pos)}
 .chips{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:6px;margin-top:10px;padding-bottom:6px;-webkit-overflow-scrolling:touch}
@@ -171,7 +172,8 @@ function open(lid){
       r.querySelector('.v').onchange=function(e){i.value=num(e.target.value);save();open(lid)};
     }else{
       var v=sums[i.id]||0,auto=i.t==='sum';
-      r=$('<div class="row" data-id="'+i.id+'"><div class="card s"><div class="sum"><div><b class="'+(v<0?'neg':'pos')+'">'+brl(v)+'</b><div class="tag">'+(auto?'Soma do bloco acima':'Soma manual')+'</div></div><div>'+(auto?'<button class="sbtn sg">'+(i.sign===-1?'−':'+')+'</button> ':'')+'<button class="sbtn rm" aria-label="Remover">×</button></div></div></div><div class="grip">⠿</div></div>');
+      r=$('<div class="row" data-id="'+i.id+'"><div class="card s"><div class="sum"><div style="flex:1;min-width:0"><b class="'+(v<0?'neg':'pos')+'">'+brl(v)+'</b><input class="tag note" placeholder="Anotação" value="'+esc(i.note||'')+'"></div><div>'+(auto?'<button class="sbtn sg">'+(i.sign===-1?'−':'+')+'</button> ':'')+'<button class="sbtn rm" aria-label="Remover">×</button></div></div></div><div class="grip">⠿</div></div>');
+      r.querySelector('.note').onchange=function(e){i.note=e.target.value;save()};
       if(auto)r.querySelector('.sg').onclick=function(){i.sign=i.sign===-1?1:-1;save();open(lid)};
       if(!auto){
         var ch=$('<div class="chips"></div>');
