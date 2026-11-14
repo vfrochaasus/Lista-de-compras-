@@ -186,7 +186,7 @@ function open(lid){
           var b=document.createElement('button');b.className='chip'+(k===1?' p':k===-1?' m':'');b.textContent=(k===1?'+ ':k===-1?'− ':'')+(x.name||'Sem nome');
           b.onclick=function(){i.sel[x.id]=k===0?1:k===1?-1:0;save();open(lid)};ch.appendChild(b)});
         if(!ch.children.length)ch.innerHTML='<span class="tag">Adicione produtos para escolher.</span>';
-        else{var t=$('<div class="tag" style="margin-top:8px">Toque no produto: soma (+), subtrai (−) ou ignora.</div>');r.querySelector('.card').appendChild(t)}
+        
         r.querySelector('.card').appendChild(ch);
       }
       r.querySelector('.rm').onclick=function(){delItem(l,i,lid)};
