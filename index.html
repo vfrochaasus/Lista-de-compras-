@@ -38,6 +38,8 @@ input.v{width:88px;text-align:right;flex:none}
 .item .sbtn{min-width:30px;width:30px;height:32px;padding:0;margin-left:0!important;flex:none;align-self:center}
 .toast{position:fixed;left:16px;right:16px;bottom:calc(84px + env(safe-area-inset-bottom,0px));max-width:528px;margin:0 auto;background:var(--ac);color:var(--ac-t);border-radius:14px;padding:10px 12px 10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;z-index:8;box-shadow:0 6px 20px rgba(0,0,0,.25)}
 .toast button{border:0;background:transparent;color:inherit;font:700 15px inherit;font-family:inherit;text-decoration:underline;padding:8px 10px}
+.grp{border:2px solid var(--gc);border-radius:20px;padding:10px 10px 0;margin-bottom:18px;background:color-mix(in srgb,var(--gc) 9%,var(--bg))}
+.grp.open{border-style:dashed}
 .sum{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .sum b{font-size:30px;line-height:1.1;display:block;flex:none;white-space:nowrap}
 .sum .sbtn{height:30px;min-width:34px;font-size:16px;padding:0 8px}
@@ -163,9 +165,10 @@ function open(lid){
   var total=l.items.reduce(function(a,i){return a+(i.t==='item'?(i.value||0):0)},0);
   app.innerHTML='<div class="top"><button class="back" id="bk" aria-label="Voltar">←</button><h1 style="margin:0">'+esc(l.name)+'</h1></div><p class="total">Total dos produtos: '+brl(total)+'</p><div id="its"></div>'+(l.items.length?'':'<div class="empty">Lista vazia. Adicione um produto.</div>')+'<div class="bar"><button id="ap" class="main">+ Produto</button><button id="as">+ Soma</button><button id="am">+ Soma manual</button></div>';
   document.getElementById('bk').onclick=home;
-  var box=document.getElementById('its');
+  var box=document.getElementById('its'),g=null;
   l.items.forEach(function(i){
     var r;
+    if(!g){g=document.createElement('div');g.className='grp';g.style.setProperty('--gc',l.color);box.appendChild(g)}
     if(i.t==='item'){
       r=$('<div class="row" data-id="'+i.id+'"><div class="card item"><input class="n" placeholder="Produto" value="'+esc(i.name)+'"><input class="v" inputmode="decimal" placeholder="R$ 0,00" value="'+(i.value?brl(i.value):'')+'"></div><div class="grip">⠿</div></div>');
       r.querySelector('.n').onchange=function(e){i.name=e.target.value;save()};
@@ -195,8 +198,10 @@ function open(lid){
       var dot=$('<button class="sbtn" aria-label="Cor do produto"></button>');dot.style.background=i.color||'var(--bg)';dot.style.border='2px solid '+(i.color||'var(--ln)');dot.onclick=function(){pickColor(i,function(){save();open(lid)})};cd.insertBefore(dot,cd.firstChild);
       var rmb=$('<button class="sbtn" aria-label="Remover">×</button>');rmb.onclick=function(){delItem(l,i,lid)};cd.appendChild(rmb)}
     r.querySelector('.grip').addEventListener('pointerdown',function(e){dragStart(e,l.items,function(){open(lid)})});
-    box.appendChild(r);
+    g.appendChild(r);
+    if(i.t==='sum')g=null;
   });
+  if(g)g.classList.add('open');
   document.getElementById('ap').onclick=function(){l.items.push({id:id(),t:'item',name:'',value:0});save();open(lid);var ns=document.querySelectorAll('.n');if(ns.length)ns[ns.length-1].focus()};
   document.getElementById('as').onclick=function(){l.items.push({id:id(),t:'sum',sign:1});save();open(lid)};
   document.getElementById('am').onclick=function(){l.items.push({id:id(),t:'msum',sel:{}});save();open(lid)};
